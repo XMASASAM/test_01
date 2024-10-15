@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.tree-checkbox {
+  display: inline-block;
+  cursor: pointer;
+  width: 12px;
+  height: 12px;
+  border: 1px solid #000;
+  text-align: center;
+  line-height: 12px;
+  margin-right: 10px;
+ font-size:16px;
+
+}
+.plus {
+  background-color: #a0e0a0; /* 緑色背景 */
+}
+.plus:after{
+ content:'+';
+}
+.minus {
+  background-color: #e0a0a0; /* 赤色背景 */
+}
+.minus:after{
+ content:'-';
+}
+label{
+ border: 1px solid #000;
+font-size:30px;
+}
+</style>
+</head>
+<body>
+
+<label>
+  <div class="tree-checkbox plus"></div>
+  <input type="checkbox">
+  アイテム1
+</label><br>
+
+<label>
+  <div class="tree-checkbox minus"></div>
+  <input type="checkbox">
+  アイテム2
+</label>
+
+</body>
+</html>
