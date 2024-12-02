@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Dependency Property</Title>
+			<Author>Masao Doi</Author>
+			<Description>Set Dependency Property</Description>
+			<Shortcut>dp</Shortcut>
+		</Header>
+		<Snippet>
+			<Code Language="CSharp">
+				<![CDATA[
+				public static readonly DependencyProperty $Property$Property = DependencyProperty.Register(nameof($Property$), typeof($Type$), typeof($Class$), new PropertyMetadata($Default$));
+				public $Type$ $Property${
+					get { return ($Type$)GetValue($Property$Property); }
+					set { SetValue($Property$Property, value); }
+				}
+				]]>
+			</Code>
+			<Declarations>
+				<Literal>
+					<ID>Property</ID>
+					<ToolTip>PropertyName</ToolTip>
+					<Default>Property</Default>
+				</Literal>
+				<Literal>
+					<ID>Type</ID>
+					<ToolTip>TypeName</ToolTip>
+					<Default>object</Default>
+				</Literal>
+				<Literal>
+					<ID>Class</ID>
+					<ToolTip>ClassName</ToolTip>
+					<Default>Class</Default>
+				</Literal>
+				<Literal>
+					<ID>Default</ID>
+					<ToolTip>DefaultValue</ToolTip>
+					<Default>null</Default>
+				</Literal>
+			</Declarations>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
