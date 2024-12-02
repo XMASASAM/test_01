@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Add Event without WinUI WPF</Title>
+			<Author>Masao Doi</Author>
+			<Description>Set Event</Description>
+			<Shortcut>addevent</Shortcut>
+		</Header>
+		<Snippet>
+			<Code Language="CSharp">
+				<![CDATA[
+		public class $EventName$EventArgs : EventArgs
+		{
+		}
+		public delegate void $EventName$EventHandler($EventOwner$ sender, $EventName$EventArgs e);
+		public event $EventName$EventHandler? $EventName$;
+		$EventName$?.Invoke(this, new $EventName$EventArgs { });
+]]>
+			</Code>
+			<Declarations>
+				<Literal>
+					<ID>EventName</ID>
+					<ToolTip>EventName</ToolTip>
+					<Default>Event</Default>
+				</Literal>
+				<Literal>
+					<ID>EventOwner</ID>
+					<ToolTip>HandlerName</ToolTip>
+					<Default>Type</Default>
+				</Literal>
+			</Declarations>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
