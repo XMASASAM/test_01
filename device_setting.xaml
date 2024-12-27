@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+	x:Class="QBS_WinUI.MediaCapture.Dialogs.DeviceSettingPage"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="using:QBS_WinUI.MediaCapture.Dialogs"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	xmlns:ut="using:QBS_WinUI.Components.Utility"
+	xmlns:con="using:CommunityToolkit.WinUI.Controls"
+	xmlns:qw="using:QBS_WinUI"
+	xmlns:cap="using:QBS_WinUI.MediaCapture"
+	Loaded="Page_Loaded"
+	Unloaded="Page_Unloaded"
+	xmlns:sys="using:System"
+	>
+	<Grid>
+		<Grid.Resources>
+			<DataTemplate x:Key="NameInfo" x:DataType="cap:NameInfo">
+				<TextBlock Text="{Binding Name}"/>
+			</DataTemplate>
+			<DataTemplate x:Key="VideoInfo" x:DataType="cap:VideoInfo">
+				<TextBlock Text="{x:Bind local:DeviceSettingPage.GetVideoInfoText(Width,Height,Fps)}"/>
+			</DataTemplate>
+		</Grid.Resources>
+		<ComboBox x:Name="Q" SelectedIndex="0" Height="0">
+			<ComboBoxItem>1080x780 30fps</ComboBoxItem>
+		</ComboBox>
+		
+		<StackPanel Orientation="Horizontal" Spacing="5">
+			<StackPanel.Resources>
+				<Style TargetType="ComboBox">
+					<Setter Property="HorizontalAlignment" Value="Stretch"/>
+				</Style>
+				<Style x:Key="W" TargetType="StackPanel">
+					
+					<Setter Property="BorderBrush" Value="{StaticResource AccentAAFillColorDefaultBrush}"/>
+					<Setter Property="BorderThickness" Value="1"/>
+					<Setter Property="CornerRadius" Value="2"/>
+					<Setter Property="Margin" Value="5"/>
+					<Setter Property="Padding" Value="5"/>
+					<Setter Property="Spacing" Value="5"/>
+				</Style>
+			</StackPanel.Resources>
+
+			<StackPanel Grid.Column="0" Style="{StaticResource W}" Width="{Binding ElementName=Q,Path=ActualWidth}">
+				
+				<qw:IconWithText Icon="Video" Text="映像"/>
+				<ut:LoadingComboBox x:Name="VideoNameComboBox"
+									ItemsSource="{x:Bind VideoDeviceList}"
+									SelectionChanged="VideoNameComboBox_SelectionChanged"
+									ItemTemplate="{StaticResource NameInfo}"
+									/>
+
+
+				<ut:LoadingComboBox x:Name="VideoResoComboBox" ItemsSource="{x:Bind VideoResoList}"
+									ItemTemplate="{StaticResource VideoInfo}"
+									SelectionChanged="VideoResoComboBox_SelectionChanged"
+									/>
+				<ComboBox Header="回転" x:Name="RotateComboBox" SelectionChanged="RotateComboBox_SelectionChanged" >
+					<ComboBoxItem>0度</ComboBoxItem>
+					<ComboBoxItem>90度</ComboBoxItem>
+					<ComboBoxItem>180度</ComboBoxItem>
+					<ComboBoxItem>270度</ComboBoxItem>
+					<ComboBoxItem>反転0度</ComboBoxItem>
+					<ComboBoxItem>反転90度</ComboBoxItem>
+					<ComboBoxItem>反転180度</ComboBoxItem>
+					<ComboBoxItem>反転270度</ComboBoxItem>
+				</ComboBox>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Style="{StaticResource W}" Width="{Binding ElementName=Q,Path=ActualWidth}">
+				<qw:IconWithText Icon="Microphone" Text="音声"/>
+
+				<ut:LoadingComboBox x:Name="AudioNameComboBox" ItemsSource="{x:Bind AudioDeviceList}"
+									ItemTemplate="{StaticResource NameInfo}"
+									SelectionChanged="AudioNameComboBox_SelectionChanged"
+									/>
+
+				<ut:LoadingComboBox x:Name="SampleRateComboBox" ItemsSource="{x:Bind AudioSampleList}" SelectionChanged="SampleRateComboBox_SelectionChanged"/>
+
+				<ut:LoadingComboBox x:Name="AudioTypeComboBox"  ItemsSource="{x:Bind AudioTypeList}" SelectionChanged="AudioTypeComboBox_SelectionChanged"/>
+
+			</StackPanel>
+		</StackPanel>
+	</Grid>
+
+</Page>
+
+<!---
+	Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+		
+		
+		-->
