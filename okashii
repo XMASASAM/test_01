@@ -1,0 +1,183 @@
+
+extern "C" {
+#include <libavdevice/avdevice.h>
+#include <libavcodec/avcodec.h>
+#include <libavutil/imgutils.h>
+
+}
+
+#include<iostream>
+#include<thread>
+#include<vector>
+#include <memory>
+#include"share_frame.h"
+#include<queue>
+#include<mutex>
+using namespace std;
+
+
+std::queue<share_frame> q;
+std::mutex mtx;
+std::mutex mtx2;
+share_frame current_frame;
+
+void fn1(int a) {
+    for (int i = 0; i < 10000; i++) {
+        // フレームの幅と高さを設定
+        int width = 640;
+        int height = 480;
+        
+        // フレームバッファを作成
+        share_frame frame = make_share_frame(av_frame_alloc());
+       // ShareFrame frame = av_frame_alloc();
+        frame->format = AV_PIX_FMT_RGB24;
+        frame->width = width;
+        frame->height = height;
+
+        // 必要なバッファサイズを計算してメモリを割り当て
+        int buffer_size = av_image_get_buffer_size(AV_PIX_FMT_RGB24, width, height, 1);
+//        uint8_t* buffer = (uint8_t*)av_malloc(buffer_size);
+        auto buffer = av_buffer_alloc(buffer_size);
+        av_image_fill_arrays(frame->data, frame->linesize, buffer->data , AV_PIX_FMT_RGB24, width, height, 1);
+//      
+//        av_buffer_re
+        // 黒色でフレームを塗りつぶす
+        memset(buffer->data, 0, buffer_size);
+        frame->buf[0] = buffer;
+        
+//        av_buffer_create(buffer,buffer_size);
+        // 作成したフレームを使って処理を続ける...
+        // 必要な処理を追加してください
+        
+        // メモリの解放
+       // av_free(buffer);
+//        av_frame_free(frame);
+        
+        printf("[%d]:count_%d\n", a,i);
+        {
+        }
+        //current_frame = frame;
+
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            std::lock_guard<std::mutex> lock2(mtx2);
+            current_frame = frame;
+
+            q.push(frame);
+        }
+
+     //   std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+    }
+    
+}
+
+bool is_active = true;
+void fn2() {
+    while (is_active) {
+        if (q.size() == 0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        else {
+            while (q.size()) {
+                std::lock_guard<std::mutex> lock(mtx);
+
+                auto f = q.front();
+                q.pop();
+            }
+        }
+    }
+}
+
+int count_qq=0;
+void fn3() {
+    std::chrono::milliseconds(1000);
+
+    while (is_active) {
+
+        {
+            
+            std::lock_guard<std::mutex> lock2(mtx);
+
+            auto qq = current_frame;
+            if(qq.get() != nullptr)
+            count_qq+=(int)qq->data;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+    }
+}
+
+
+class MyClass {
+    thread loop_thread;
+    bool is_ok = true;
+    mutex mymtx;
+    int count = 0;
+    void _loop() {
+        is_ok = true;
+        while (is_ok) {
+            {
+                lock_guard<mutex> lock(mymtx);
+                count++;
+                printf("%d\n", count);
+            }
+       //     std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+        }
+
+    }
+public:
+
+    void start() {
+        //lock_guard<mutex> lock(mymtx);
+
+        is_ok = true;
+        loop_thread = thread(&MyClass::_loop,this);
+    }
+
+    void close() {
+        is_ok = false;
+        lock_guard<mutex> lock(mymtx);
+
+        loop_thread.join();
+    }
+    int get_count() {
+        lock_guard<mutex> lock(mymtx);
+        return count;
+    }
+};
+
+
+int main(void) {
+   // avdevice_register_all();
+
+   MyClass mc;
+   auto ggh =  thread([&]{
+       mc.start();
+//       mc.start();
+   });
+   std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  // std::chrono::milliseconds(1000*10);
+   thread([&] {
+       mc.close();
+     }).join();
+   printf("mc_closed %d\n",mc.get_count());
+  ggh.join();
+//    return 0;
+    std::cout << "FFmpeg API" << std::endl;
+    vector<thread> ts;
+    thread th = thread(fn2);
+    thread th2 = thread(fn3);
+    for (int i = 0; i < 1; i++) {
+        ts.push_back(thread(fn1,i));
+    }
+    for (auto& i : ts) {
+        i.join();
+    }
+    is_active = false;
+    th.join();
+    th2.join();
+    printf("%d\n",count_qq);
+}
